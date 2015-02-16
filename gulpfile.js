@@ -38,7 +38,7 @@ gulp.task('clean', function() {
       .pipe($.clean({force: true}));
 });
 
-// injects dependencies into HTML
+// injects client js dependencies into HTML
 gulp.task('wiredep', function() {
   var options = config.getWiredepDefaultOptions();
   var wiredep = require('wiredep').stream;
@@ -48,7 +48,7 @@ gulp.task('wiredep', function() {
       // checks Bower components and injects into config.index
       .pipe(wiredep(options))
       // takes all config.js files and injects into config.index
-      .pipe($.inject(gulp.src(config.alljs)))
+      .pipe($.inject(gulp.src(config.js)))
       // writes transformed config.index to folder
       .pipe(gulp.dest(config.client));
 });

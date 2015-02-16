@@ -11,16 +11,20 @@ module.exports = function() {
        * Files paths
        */
       alljs: [
-          client + '**/*.js',
+          './**/*.js',
+          './*.js',
           // tests + '**/*.js', // uncomment this line to include test files 
-          '!' + client + 'bower_components/**/*.js' // exclude bower component js files
           // server + '**/*.js'
+          '!' + client + 'bower_components/**/*.js' // exclude bower component js files
       ],
       build: build,
       client: client,
-      clientJS: client + 'app/app.js',
+      clientJS: client + 'app/**app.js',
       clientTests: client + 'clientSpec.js', 
       index: client + 'index.html',
+      js: [
+          client + '**/*.js',
+      ],
       less: client + 'styles/styles.less',
       pub: pub,
       server: server,
