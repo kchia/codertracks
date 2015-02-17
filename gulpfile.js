@@ -1,11 +1,16 @@
 'use strict';
 
 var gulp = require('gulp');
+var del = require('del');
+var path = require('path');
 var args = require('yargs').argv;
 var config = require('./gulp.config.js')();
-var minifyCSS = require('gulp-minify-css');
- /*jshint -W079 */
 var $ = require('gulp-load-plugins')({lazy: true});
+var minifyCSS = require('gulp-minify-css');
+var browserify = require('browserify'); 
+var watchify = require('watchify');
+var source = require('vinyl-source-stream');
+ /*jshint -W079 */
 // var port = process.env.PORT || config.defaultPort;
 
 // provides a list of all tasks in gulpfile
@@ -20,7 +25,7 @@ gulp.task('vet', function() {
 
   return gulp
       // reads all js files into the stream
-      .src(config.alljs)
+      .src(config.js)
       // prints all files being piped through the stream
       .pipe($.if(args.verbose, $.print()))
       // lints code style to enforce style guide
@@ -48,24 +53,42 @@ gulp.task('wiredep', function() {
       // checks Bower components and injects into config.index
       .pipe(wiredep(options))
       // takes all config.js files and injects into config.index
-      .pipe($.inject(gulp.src(config.js)))
+      .pipe($.inject(gulp.src(config.js, {relative: true})))
       // writes transformed config.index to folder
       .pipe(gulp.dest(config.client));
 });
 
-// bundles code to be served by the backend
-gulp.task('browserify-client', ['vet'], function() {
-  console.log('Bundling client code...');
+gulp.task('inject', ['wiredep', 'styles'], function() {
+    console.log('Wire up the app css into the html, and call wiredep ');
 
-  return gulp
-      .src(config.clientJS)
-      .pipe($.browserify({
-        insertGlobals: true,
-        debug: true
-      }))
-      .pipe($.rename('bundled.js'))
-      .pipe(gulp.dest(config.build))
-      .pipe(gulp.dest(config.pub + 'javascripts'));
+    return gulp
+        .src(config.index)
+        .pipe($.inject(gulp.src(config.css, {relative: true})))
+        .pipe(gulp.dest(config.client));
+});
+
+// browserifies our code and compiles React JSX files
+gulp.task('scripts', ['clean'], function() {
+  console.log('Bundling client code...');
+  var bundler = watchify(browserify({
+      entries: [config.js],
+      insertGlobals: true,
+      cache: {},
+      packageCache: {},
+      fullPaths: true
+  }));
+
+  bundler.on('update', rebundle);
+
+  function rebundle() {
+    return bundler.bundle()
+      // log errors if they happen
+        .on('error', $.util.log.bind($.util, 'Browserify Error'))
+        .pipe(source('app.js'))
+        .pipe(gulp.dest('./build/scripts'));
+  }
+
+  return rebundle();
 
 });
 
@@ -87,8 +110,7 @@ gulp.task('styles', function() {
       .pipe($.plumber())
       .pipe($.less())
       .pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
-      .pipe(gulp.dest(config.build))
-      .pipe(gulp.dest(config.pub + 'stylesheets'));
+      .pipe(gulp.dest(config.build));
 });
 
 // minifies the css file compiled from less
@@ -97,8 +119,7 @@ gulp.task('minify-css', ['styles'], function() {
       .src(config.build + 'styles.css')
       .pipe(minifyCSS())
       .pipe($.rename('styles.min.css'))
-      .pipe(gulp.dest(config.build))
-      .pipe(gulp.dest(config.pub + 'stylesheets'));
+      .pipe(gulp.dest(config.build));
 });
 
 gulp.task('copy-bower-components', function () {
@@ -111,14 +132,13 @@ gulp.task('copy-html-files', function () {
     .pipe(gulp.dest(config.build));
 });
 
-gulp.task('build', ['wiredep', 
-  'vet',
+gulp.task('build', ['inject', 
+  // 'vet',
   'browserify-client',
-  'styles', 
   'minify-css', 
   'minify-js', 
   'copy-html-files',
-  // 'copy-bower-components',
+  'copy-bower-components',
   'connectBuild']);
 
 // gulp plugin for the Jest test library
