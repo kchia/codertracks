@@ -1,1 +1,1 @@
-web: npm install; npm run gulp; npm run node 
+web: npm install; gulp build; node server/server.js 
