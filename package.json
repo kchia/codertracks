@@ -76,6 +76,8 @@
   },
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install",
+    "gulp": "gulp build",
+    "serve": "node server/server.js",
     "start": "watchify -o /bundle.js -v -d .",
     "build": "NODE_ENV=production browserify ./client/**/*.js | uglifyjs -cm > ./client/app/bundle.min.js"
   },
