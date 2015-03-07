@@ -7,7 +7,6 @@ var ProfileBox = React.createClass({
       <div className="profile">
         <p>Name: {this.props.profileData.name}</p> 
         <p>Title: {this.props.profileData.title}</p> 
-        <p>Categories: {this.props.profileData.subcategories}</p> 
         <p>Skills: {this.props.profileData.skills.join(', ')}</p>
         <p>Feedback: {this.props.profileData.feedback}</p>
         <p>Rate: ${this.props.profileData.hourlyRate}/hr</p>

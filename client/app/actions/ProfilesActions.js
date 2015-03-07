@@ -3,12 +3,11 @@ var ProfilesConstants = require('../constants/ProfilesConstants');
 
 var ProfilesActions = {
 
-  getCoders: function(language, country, subcategory, hourlyRateMax, minScore, maxScore) {
+  getCoders: function(language, country, hourlyRateMax, minScore, maxScore) {
     AppDispatcher.handleViewAction({
       actionType: 'GET_CODERS',
       language: language,
       country: country,
-      subcategory: subcategory,
       hourlyRateMax: hourlyRateMax,
       minScore: minScore,
       maxScore: maxScore

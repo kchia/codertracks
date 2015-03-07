@@ -21,15 +21,14 @@ module.exports = {
 		  var page = req.url.split("=")[1] || 0;
 		  var language = req.url.split("=")[3] || 'JavaScript'; 
 		  var country = req.url.split("=")[5] || 'Vietnam'; 
-		  var subcategory = req.url.split("=")[7] || 'Web Development'; 
-		  var hourlyRate = req.url.split("=")[9] || '100'; 
-		  var minScore = req.url.split('=')[11] || 0;
-		  var maxScore = req.url.split('=')[13] || 5;
+		  var hourlyRate = req.url.split("=")[7] || '100'; 
+		  var minScore = req.url.split('=')[9] || 0;
+		  var maxScore = req.url.split('=')[11] || 5;
 
 		  var summaryProfiles = {};
-		  var params = {'q': 'skills:'+ language + ' AND country:' + country + ' AND subcategory2:' + subcategory, 'rate': '[0 TO ' + hourlyRate+ ']', 'paging': page + ';20', 'feedback': '[' + minScore + ' TO ' + maxScore + ']'};
+		  var params = {'q': 'skills:'+ language + ' AND country:' + country, 'rate': '[0 TO ' + hourlyRate+ ']', 'paging': page + ';20', 'feedback': '[' + minScore + ' TO ' + maxScore + ']'};
 
-		  console.log(language, country, subcategory, hourlyRate, minScore, maxScore, params);
+		  console.log(language, country, hourlyRate, minScore, maxScore, params);
 		  var profiles = Q.nbind(freelancers.find,freelancers);
 		  
 		  profiles(params)
@@ -40,7 +39,6 @@ module.exports = {
 		        return {
 		          name: profile.name,
 		          title: profile.title,
-		          subcategories: profile.categories,
 		          skills: profile.skills,
 		          feedback: profile.feedback,
 		          portrait: profile.portrait_50,

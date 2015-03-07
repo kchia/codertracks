@@ -36,12 +36,11 @@ render: function() {
     e.preventDefault();
     var language = this.refs.language.getDOMNode().value;
     var country = this.refs.country.getDOMNode().value;
-    var subcategory = this.refs.subcategory.getDOMNode().value;
     var hourlyRateMax = this.refs.hourlyRateMax.getDOMNode().value;
     var minScore = this.refs.feedbackScore.getDOMNode().value.split(',')[0];
     var maxScore = this.refs.feedbackScore.getDOMNode().value.split(',')[1];
     
-    ProfilesActions.getCoders(language,country,subcategory,hourlyRateMax, minScore, maxScore);
+    ProfilesActions.getCoders(language,country,hourlyRateMax, minScore, maxScore);
     // this.refs.language.getDOMNode().value = '';
     // this.refs.country.getDOMNode().value = '';
     // this.refs.subcategory.getDOMNode().value = '';
