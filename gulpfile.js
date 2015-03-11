@@ -5,7 +5,11 @@ var del = require('del');
 var path = require('path');
 var args = require('yargs').argv;
 var config = require('./gulp.config.js')();
-var $ = require('gulp-load-plugins')({lazy: true});
+var $ = require('gulp-load-plugins')({
+  lazy: true,
+  pattern: ['gulp-*', 'gulp.*', 'main-bower-files'],
+  replaceString: /\bgulp[\-.]/
+});
 var minifyCSS = require('gulp-minify-css');
 var concatCSS = require('gulp-concat-css');
 var browserify = require('browserify')(config.clientApp + 'app.js'); 
@@ -14,6 +18,7 @@ var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var bs = require('browser-sync');
 var reload = bs.reload;
+var mainBowerFiles = require('main-bower-files');
 
  /*jshint -W079 */
 // var port = process.env.PORT || config.defaultPort;
@@ -93,26 +98,33 @@ gulp.task('optimize:css', ['concat-css'], function() {
 gulp.task('bundle', function(){
   browserify.transform(reactify); // use the reactify transform
   return browserify.bundle()
-    .pipe(source('bundle.js'))
-    .pipe(gulp.dest(config.clientApp))
-    .pipe(gulp.dest(config.dist));
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest(config.clientApp))
 });
+
+gulp.task('concat-js', ['bundle'], function() {
+  return gulp
+      .src([config.clientApp + 'bundle.js', config.clientApp + 'autocomplete.js'])
+      .pipe($.concat('all.js'))
+      .pipe(gulp.dest(config.clientApp))
+})
 
 // minifies bundled client code
-gulp.task('optimize:js', ['bundle'], function() {
-  return gulp.src([config.clientApp + 'bundle.js', config.clientApp + 'autocomplete.js'])
+gulp.task('optimize:js', ['concat-js'], function() {
+  var jsFiles = [config.clientApp + 'all.js'];
+  return gulp.src($.mainBowerFiles().concat(jsFiles))
+      .pipe($.filter('*.js'))
       .pipe($.uglify())
-      .pipe($.rename('bundle.min.js'))
-      .pipe(gulp.dest(config.clientApp))
-      .pipe(gulp.dest(config.dist))
+      .pipe($.rename('all.min.js'))
+      .pipe(gulp.dest(config.dist + 'js'))
 });
 
 
-// copies bower components from development folder to the distributable folder
-gulp.task('copy-bower-components', function () {
-  gulp.src(config.client + 'bower_components/**')
-    .pipe(gulp.dest(config.dist + 'bower_components'));
-});
+// // copies bower components from development folder to the distributable folder
+// gulp.task('copy-bower-components', function () {
+//   gulp.src(config.client + 'bower_components/**')
+//     .pipe(gulp.dest(config.dist + 'bower_components'));
+// });
 
 // copies html files from development folder to the distributable folder
 gulp.task('copy-html-file', function () {
@@ -185,7 +197,7 @@ gulp.task('build', function(){
     'optimize:css', 
     'optimize:js', 
     'copy-html-file',
-    'copy-bower-components',
+    // 'copy-bower-components',
     'copy-image-files',
     'copy-languagejson-file',
     'copy-countryjson-file'
