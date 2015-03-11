@@ -8,7 +8,7 @@ var config = require('./gulp.config.js')();
 var $ = require('gulp-load-plugins')({lazy: true});
 var minifyCSS = require('gulp-minify-css');
 var concatCSS = require('gulp-concat-css');
-var browserify = require('browserify')(config.client + 'app/app.js'); 
+var browserify = require('browserify')(config.clientApp + 'app.js'); 
 var reactify = require('reactify'); 
 var watchify = require('watchify');
 var source = require('vinyl-source-stream');
@@ -68,7 +68,7 @@ gulp.task('vetserver', function() {
 
 // run gulp clean prior to each dist to delete the previous dist
 gulp.task('clean', function() {
-    gulp.src([config.dist + '*', config.client + 'app/bundle*', config.client + 'styles/styles.css'])
+    gulp.src([config.dist + '*', config.clientApp + 'bundle*', config.client + 'styles/styles.css'])
       .pipe($.clean({force: true}));
 });
 
@@ -82,7 +82,7 @@ gulp.task('wiredep', function() {
       // checks Bower components and injects into config.index
       .pipe(wiredep(options))
       // takes bundled js file and injects into config.index
-      .pipe($.inject(gulp.src(config.client + 'app/bundle.js')))
+      .pipe($.inject(gulp.src(config.clientApp + 'bundle.js')))
       // writes transformed config.index to folder
       .pipe(gulp.dest(config.client));
 });
@@ -92,7 +92,7 @@ gulp.task('bundle', function(){
   browserify.transform(reactify); // use the reactify transform
   return browserify.bundle()
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest(config.client + 'app/'))
+    .pipe(gulp.dest(config.clientApp))
     .pipe(gulp.dest(config.dist));
 });
 
@@ -119,24 +119,12 @@ gulp.task('minify-js', ['bundle'], function() {
   return gulp.src(config.dist + 'bundle.js')
       .pipe($.uglify())
       .pipe($.rename('bundle.min.js'))
-      .pipe(gulp.dest(config.client + 'app'))
+      .pipe(gulp.dest(config.clientApp))
       .pipe(gulp.dest(config.dist))
 });
 
-// compiles LESS to CSS and saves CSS to public folder
-gulp.task('styles', function() {
-  console.log('Compiling Less --> CSS');
-
-  return gulp
-      .src(config.less)
-      .pipe($.plumber())
-      .pipe($.less())
-      .pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
-      // .pipe(gulp.dest(config.dist)); // NOTE: uncomment this line if using less
-});
-
 // concatenates all css files 
-gulp.task('concat-css', ['styles'], function() {
+gulp.task('concat-css', function() {
   return gulp
       // NOTE:refactor file path
       .src([config.client + 'styles/**/*.css',config.client + 'styles/*.css'])
@@ -146,7 +134,7 @@ gulp.task('concat-css', ['styles'], function() {
 });
 
 // minifies the css file compiled from less
-gulp.task('minify-css', ['styles', 'concat-css'], function() {
+gulp.task('optmize:css', ['styles', 'concat-css'], function() {
   return gulp
       .src(config.dist + 'styles.css')
       .pipe(minifyCSS())
@@ -182,27 +170,27 @@ gulp.task('copy-styles-files', function () {
 });
 
 gulp.task('copy-autocomplete-file', function () {
-  gulp.src(config.client + 'app/autocomplete.js')
+  gulp.src(config.clientApp + 'autocomplete.js')
     .pipe(gulp.dest(config.dist));
 });
 
 gulp.task('copy-autocompleteCountry-file', function () {
-  gulp.src(config.client + 'app/autocompleteCountry.js')
+  gulp.src(config.clientApp + 'autocompleteCountry.js')
     .pipe(gulp.dest(config.dist));
 });
 
 gulp.task('copy-languagejson-file', function () {
-  gulp.src(config.client + 'app/html-languages.json')
+  gulp.src(config.clientApp + 'html-languages.json')
     .pipe(gulp.dest(config.dist));
 });
 
 gulp.task('copy-countryjson-file', function () {
-  gulp.src(config.client + 'app/html-countries.json')
+  gulp.src(config.clientApp + 'html-countries.json')
     .pipe(gulp.dest(config.dist));
 });
 
 gulp.task('copy-countryjson-file', function () {
-  gulp.src(config.client + 'app/html-countries.json')
+  gulp.src(config.clientApp + 'html-countries.json')
     .pipe(gulp.dest(config.dist));
 });
 
@@ -210,7 +198,7 @@ gulp.task('build', function(){
   $.runSequence(
     ['inject', 
     // 'vet',
-    'minify-css', 
+    'optimize:css', 
     'minify-js', 
     'copy-html-files',
     'copy-bower-components',
@@ -231,7 +219,7 @@ gulp.task('serve', function() {
   });
 });
 
-// refreshes the browser in response to the changes
+// refreshes the browser in response to changes
 gulp.task('browser-sync', function() {
   bs({
     server: "dist",

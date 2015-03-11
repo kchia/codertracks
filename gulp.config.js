@@ -2,6 +2,7 @@
 
 module.exports = function() {
   var client = './client/';
+  var clientApp = client + 'app/';
   var server = './server/';
   var tests = './__tests__/';
   var pub = './public/';
@@ -28,6 +29,7 @@ module.exports = function() {
       ],
       dist: dist,
       client: client,
+      clientApp: clientApp,
       clientTests: tests + 'clientSpec.js',
       css: [
           client + 'styles/css/*'
