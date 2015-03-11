@@ -72,6 +72,79 @@ gulp.task('clean', function() {
       .pipe($.clean({force: true}));
 });
 
+// concatenates all css files 
+gulp.task('concat-css', function() {
+  return gulp
+      .src(config.css)
+      .pipe(concatCSS('styles.css'))
+      .pipe(gulp.dest(config.clientStyles));
+});
+
+// minifies the css file compiled from less
+gulp.task('optimize:css', ['concat-css'], function() {
+  return gulp
+      .src(config.clientStyles + 'styles.css')
+      .pipe(minifyCSS())
+      .pipe($.rename('styles.min.css'))
+      .pipe(gulp.dest(config.distStyles));
+});
+
+// transforms jsx into js and bundles code
+gulp.task('bundle', function(){
+  browserify.transform(reactify); // use the reactify transform
+  return browserify.bundle()
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest(config.clientApp))
+    .pipe(gulp.dest(config.dist));
+});
+
+// minifies bundled client code
+gulp.task('optimize:js', ['bundle'], function() {
+  return gulp.src([config.clientApp + 'bundle.js', config.clientApp + 'autocomplete.js'])
+      .pipe($.uglify())
+      .pipe($.rename('bundle.min.js'))
+      .pipe(gulp.dest(config.clientApp))
+      .pipe(gulp.dest(config.dist))
+});
+
+
+// copies bower components from development folder to the distributable folder
+gulp.task('copy-bower-components', function () {
+  gulp.src(config.client + 'bower_components/**')
+    .pipe(gulp.dest(config.dist + 'bower_components'));
+});
+
+// copies html files from development folder to the distributable folder
+gulp.task('copy-html-file', function () {
+  gulp.src(config.index)
+    .pipe(gulp.dest(config.dist));
+});
+
+gulp.task('copy-image-files', function () {
+  gulp.src(config.client + 'images/**/*')
+    .pipe(gulp.dest(config.dist + 'images/'));
+});
+
+// gulp.task('copy-font-files', function () {
+//   gulp.src(config.client + 'styles/fonts/*')
+//     .pipe(gulp.dest(config.dist + 'fonts'));
+// });
+
+// gulp.task('copy-autocomplete-file', function () {
+//   gulp.src(config.clientApp + 'autocomplete.js')
+//     .pipe(gulp.dest(config.dist));
+// });
+
+gulp.task('copy-languagejson-file', function () {
+  gulp.src(config.clientApp + 'html-languages.json')
+    .pipe(gulp.dest(config.dist));
+});
+
+gulp.task('copy-countryjson-file', function () {
+  gulp.src(config.clientApp + 'html-countries.json')
+    .pipe(gulp.dest(config.dist));
+});
+
 // injects client js dependencies into HTML
 gulp.task('wiredep', function() {
   var options = config.getWiredepDefaultOptions();
@@ -87,17 +160,8 @@ gulp.task('wiredep', function() {
       .pipe(gulp.dest(config.client));
 });
 
-// transforms jsx into js and bundles code
-gulp.task('bundle', function(){
-  browserify.transform(reactify); // use the reactify transform
-  return browserify.bundle()
-    .pipe(source('bundle.js'))
-    .pipe(gulp.dest(config.clientApp))
-    .pipe(gulp.dest(config.dist));
-});
-
 // injects css dependencies into HTML
-gulp.task('inject', ['bundle','wiredep', 'styles'], function() {
+gulp.task('inject', ['bundle','wiredep'], function() {
     console.log('Wire up the app css into the html, and call wiredep ');
 
     return gulp
@@ -114,98 +178,15 @@ gulp.task('inject', ['bundle','wiredep', 'styles'], function() {
         .pipe(gulp.dest(config.dist));
 });
 
-// minifies bundled client code
-gulp.task('minify-js', ['bundle'], function() {
-  return gulp.src(config.dist + 'bundle.js')
-      .pipe($.uglify())
-      .pipe($.rename('bundle.min.js'))
-      .pipe(gulp.dest(config.clientApp))
-      .pipe(gulp.dest(config.dist))
-});
-
-// concatenates all css files 
-gulp.task('concat-css', function() {
-  return gulp
-      // NOTE:refactor file path
-      .src([config.client + 'styles/**/*.css',config.client + 'styles/*.css'])
-      .pipe(concatCSS('styles.css'))
-      .pipe(gulp.dest('client/styles'))
-      .pipe(gulp.dest(config.dist));
-});
-
-// minifies the css file compiled from less
-gulp.task('optmize:css', ['styles', 'concat-css'], function() {
-  return gulp
-      .src(config.dist + 'styles.css')
-      .pipe(minifyCSS())
-      .pipe($.rename('styles.min.css'))
-      .pipe(gulp.dest(config.dist));
-});
-
-// copies bower components from development folder to the distributable folder
-gulp.task('copy-bower-components', function () {
-  gulp.src(config.client + 'bower_components/**')
-    .pipe(gulp.dest(config.dist + 'bower_components'));
-});
-
-// copies html files from development folder to the distributable folder
-gulp.task('copy-html-files', function () {
-  gulp.src(config.client + '**/*.html')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-font-files', function () {
-  gulp.src(config.client + 'styles/fonts/*')
-    .pipe(gulp.dest(config.dist + 'fonts'));
-});
-
-gulp.task('copy-image-files', function () {
-  gulp.src(config.client + 'images/**/*')
-    .pipe(gulp.dest(config.dist + 'images/'));
-});
-
-gulp.task('copy-styles-files', function () {
-  gulp.src(config.client + 'styles/**/*')
-    .pipe(gulp.dest(config.dist + 'styles/'));
-});
-
-gulp.task('copy-autocomplete-file', function () {
-  gulp.src(config.clientApp + 'autocomplete.js')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-autocompleteCountry-file', function () {
-  gulp.src(config.clientApp + 'autocompleteCountry.js')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-languagejson-file', function () {
-  gulp.src(config.clientApp + 'html-languages.json')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-countryjson-file', function () {
-  gulp.src(config.clientApp + 'html-countries.json')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-countryjson-file', function () {
-  gulp.src(config.clientApp + 'html-countries.json')
-    .pipe(gulp.dest(config.dist));
-});
-
 gulp.task('build', function(){
   $.runSequence(
     ['inject', 
     // 'vet',
     'optimize:css', 
-    'minify-js', 
-    'copy-html-files',
+    'optimize:js', 
+    'copy-html-file',
     'copy-bower-components',
-    'copy-styles-files',
     'copy-image-files',
-    'copy-autocomplete-file',
-    'copy-autocompleteCountry-file',
     'copy-languagejson-file',
     'copy-countryjson-file'
     ]);
@@ -251,28 +232,3 @@ gulp.task('test', ['vet', 'browserify-client'], function () {
         ]
     }));
 });
-
-// // browserifies our code and compiles React JSX files
-// gulp.task('scripts', ['clean'], function() {
-//   console.log('Bundling client code...');
-//   var bundler = watchify(browserify({
-//       entries: [config.js],
-//       insertGlobals: true,
-//       cache: {},
-//       packageCache: {},
-//       fullPaths: true
-//   }));
-
-//   bundler.on('update', rebundle);
-
-//   function rebundle() {
-//     return bundler.bundle()
-//       // log errors if they happen
-//         .on('error', $.util.log.bind($.util, 'Browserify Error'))
-//         .pipe(source('app.js'))
-//         .pipe(gulp.dest('./dist/scripts'));
-//   }
-
-//   return rebundle();
-
-// });

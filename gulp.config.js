@@ -27,13 +27,17 @@ module.exports = function() {
           '!' + server + 'deprecatedServerLogic/**/**/**/*.js',
           '!' + server + 'config/utils.js'
       ],
-      dist: dist,
       client: client,
       clientApp: clientApp,
+      clientStyles: client + 'styles/',
       clientTests: tests + 'clientSpec.js',
       css: [
-          client + 'styles/css/*'
+          client + 'styles/css/*',
+          client + 'styles/**/*.css',
+          client + 'styles/*.css'
       ], 
+      dist: dist,
+      distStyles: dist + 'styles/',
       index: client + 'index.html',
       js: [
           './client/app/app.js',
