@@ -32,7 +32,7 @@ var SearchLanguageBar = React.createClass({
     };
 
     if (!languageList){
-      reloadJs('./autocomplete.js');
+      reloadJs('js/autocomplete.js');
     }
 
     return (

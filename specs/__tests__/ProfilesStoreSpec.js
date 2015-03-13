@@ -36,24 +36,4 @@ describe('ProfilesStore', function() {
   it('registers a callback with the dispatcher', function() {
     expect(AppDispatcher.register.mock.calls.length).toBe(1);
   });
-
-  it('', function() {
-
-  });
-
-  it('', function() {
-
-  });
-
-  it('', function() {
-
-  });
-
-  it('', function() {
-
-  });
-
-  it('', function() {
-
-  });
 });

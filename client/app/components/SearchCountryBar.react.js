@@ -35,7 +35,7 @@ var SearchCountryBar = React.createClass({
     };
     
     if (!countryList){
-      reloadJs('./autocomplete.js');
+      reloadJs('js/autocomplete.js');
     }
 
     return (

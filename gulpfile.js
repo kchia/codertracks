@@ -93,7 +93,6 @@ gulp.task('bundle', function(){
   return browserify.bundle()
     .pipe(source('bundle.js'))
     .pipe(gulp.dest(config.client + 'app/'))
-    .pipe(gulp.dest(config.dist));
 });
 
 // injects css dependencies into HTML
@@ -116,11 +115,10 @@ gulp.task('inject', ['bundle','wiredep', 'styles'], function() {
 
 // minifies bundled client code
 gulp.task('minify-js', ['bundle'], function() {
-  return gulp.src(config.dist + 'bundle.js')
+  return gulp.src(config.client + 'app/bundle.js')
       .pipe($.uglify())
       .pipe($.rename('bundle.min.js'))
-      .pipe(gulp.dest(config.client + 'app'))
-      .pipe(gulp.dest(config.dist))
+      .pipe(gulp.dest(config.dist + 'js'))
 });
 
 // compiles LESS to CSS and saves CSS to public folder
@@ -139,19 +137,18 @@ gulp.task('styles', function() {
 gulp.task('concat-css', ['styles'], function() {
   return gulp
       // NOTE:refactor file path
-      .src([config.client + 'styles/**/*.css',config.client + 'styles/*.css'])
+      .src([config.client + 'styles/**/*.css'])
       .pipe(concatCSS('styles.css'))
       .pipe(gulp.dest('client/styles'))
-      .pipe(gulp.dest(config.dist));
 });
 
 // minifies the css file compiled from less
 gulp.task('minify-css', ['styles', 'concat-css'], function() {
   return gulp
-      .src(config.dist + 'styles.css')
+      .src(config.client + 'styles/styles.css')
       .pipe(minifyCSS())
       .pipe($.rename('styles.min.css'))
-      .pipe(gulp.dest(config.dist));
+      .pipe(gulp.dest(config.dist + 'styles'));
 });
 
 // copies bower components from development folder to the distributable folder
@@ -171,33 +168,19 @@ gulp.task('copy-font-files', function () {
     .pipe(gulp.dest(config.dist + 'fonts'));
 });
 
-gulp.task('copy-image-files', function () {
-  gulp.src(config.client + 'images/**/*')
-    .pipe(gulp.dest(config.dist + 'images/'));
-});
-
 gulp.task('copy-styles-files', function () {
-  gulp.src(config.client + 'styles/**/*')
+  gulp.src([config.client + 'styles/**/*', 
+    '!' + config.client + 'styles/**/*.css'])
     .pipe(gulp.dest(config.dist + 'styles/'));
 });
 
 gulp.task('copy-autocomplete-file', function () {
   gulp.src(config.client + 'app/autocomplete.js')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-autocompleteCountry-file', function () {
-  gulp.src(config.client + 'app/autocompleteCountry.js')
-    .pipe(gulp.dest(config.dist));
+    .pipe(gulp.dest(config.dist + 'js'));
 });
 
 gulp.task('copy-languagejson-file', function () {
   gulp.src(config.client + 'app/html-languages.json')
-    .pipe(gulp.dest(config.dist));
-});
-
-gulp.task('copy-countryjson-file', function () {
-  gulp.src(config.client + 'app/html-countries.json')
     .pipe(gulp.dest(config.dist));
 });
 
@@ -215,9 +198,7 @@ gulp.task('build', function(){
     'copy-html-files',
     'copy-bower-components',
     'copy-styles-files',
-    'copy-image-files',
     'copy-autocomplete-file',
-    'copy-autocompleteCountry-file',
     'copy-languagejson-file',
     'copy-countryjson-file'
     ]);
