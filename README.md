@@ -48,7 +48,7 @@ Our team used the following technologies to create CoderTracks:
 13. Mocha/Chai
 
 ## Development
-# Installation instructions
+### Installation instructions
 
 To get up and running on your local development machine:  
 1. Fork the repo  
@@ -59,7 +59,10 @@ To get up and running on your local development machine:
 
 Additionally, to continually compile files and refresh the browser, run `gulp clean` and then run `gulp build` 
 
-## Contributing Guidelines
+### Configuring API Keys
+You'll need API keys to connect to the oDesk API. Send us a message for ours or sign up for an oDesk Developer account at <https://developers.odesk.com>. To configure the keys, create a config.js file within the root directory.
+
+### Contributing Guidelines
 
 CoderTracks is still under development. If you would like to make a contribution, please see the contribution guide for the git workflow.  
 <https://github.com/CulturedCheese/thesis-project/blob/development/CONTRIBUTING.md>
