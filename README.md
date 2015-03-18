@@ -3,7 +3,7 @@
 CoderTracks is a web application that provides users with insightful analysis and useful data visualization of GitHub activity around the world by programming language or by country. Project/company owners will find CoderTracks useful. Project owners will be able to more efficiently find clusters of capable programmers in lower cost regions to hire for their projects. By analyzing the repositories and commits on GitHub, CoderTracks determines which programming languages are most popular and active in each part of the world, thereby pointing users in the right direction as to where to start their global search for programmers that fit their budget.  
 
 CoderTracks is still under development. If you would like to make a contribution, please see the contribution guide for the git workflow.  
-<https://github.com/CulturedCheese/thesis-project/CONTRIBUTING.md> 
+<https://github.com/CulturedCheese/thesis-project/blob/development/CONTRIBUTING.md>
 
 Visit the app at:  
 www.codertracks.com
@@ -48,27 +48,21 @@ Our team used the following technologies to create CoderTracks:
 13. Mocha/Chai
 
 ## Development
-
-## Documents
-
-For the most up-to-date documentation on product functionality and technical architecture goto:  
-<https://github.com/CulturedCheese/thesis-project/master/docs>
-
-## Installation instructions
+# Installation instructions
 
 To get up and running on your local development machine:  
 1. Fork the repo  
 2. Run npm install  
 3. Run gulp build
 4. Run nodemon server/server.js  
-6. Go to <http://localhost:5000>  
+5. Go to <http://localhost:5000>  
 
 Additionally, to continually compile files and refresh the browser, run `gulp clean` and then run `gulp build` 
 
 ## Contributing Guidelines
 
 CoderTracks is still under development. If you would like to make a contribution, please see the contribution guide for the git workflow.  
-<https://github.com/CulturedCheese/thesis-project/CONTRIBUTING.md>
+<https://github.com/CulturedCheese/thesis-project/blob/development/CONTRIBUTING.md>
 
 For any bugs or issues, please create a new issue at:  
 <https://github.com/CulturedCheese/thesis-project/issues>
